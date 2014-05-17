@@ -67,6 +67,11 @@ class TR:
 
             ttl += 1
 
+        rtt_promedio = sum(self.rtt_medio) / len(self.rtt_medio)
+        rtt_desvio = math.sqrt( sum([ math.pow(rtt - rtt_promedio,2) for rtt in self.rtt_medio ]) / (len(self.rtt_medio) - 1) )
+        zrtt = [ (rtt - rtt_promedio)/rtt_desvio for rtt in self.rtt_medio  ]
+        self.zrtt = dict( zip(self.rtt_medio.keys(), zrtt) )
+
         return (self.hops, self.rtt_medio, self.rtt_min, self.rtt_max, self.zrtt)
 
     def send_c_scapy(self, host):
