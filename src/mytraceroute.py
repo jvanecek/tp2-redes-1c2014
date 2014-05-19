@@ -16,6 +16,10 @@ class Hop:
     rtt_max = 0.0
     zrtt = 0.0
     distinguido = 0
+    pais = "S/D"
+    ciudad = "S/D"
+    lat = 0.0
+    lng = 0.0
 
     def __init__(self, ttl):
         self.routers = []
@@ -41,7 +45,7 @@ class TR:
         return resp
 
     # manda packages paquetes por ttl a host, y devuelve una lista de Hop
-    def send(self, host, timeout=1, packages=4, umbral=0.5):
+    def send(self, host, timeout=1, packages=4, umbral=0.5, localizacion=False):
         self.hops = []
         ttl = 1
 
@@ -77,23 +81,54 @@ class TR:
             self.hops[i].zrtt = (rtts[i] - rtt_promedio)/rtt_desvio
             self.hops[i].distinguido = (self.hops[i].zrtt > umbral)
 
+        if localizacion: 
+            self.get_localizaciones()
+
         return self.hops
 
-    def send_c_scapy(self, host):
-        return traceroute([host], maxttl=20, retry=-2)
-
     # para las direcciones privadas o mal formadas devuelve (None, None).
-    def get_location(self, ip):
-        jresp = urllib.urlopen("http://api.hostip.info/get_json.php?ip=%s&position=true" % ip).read()
-        response = json.loads(jresp.encode("ascii", "ignore"))
-        return (response['lat'], response['lng'])
+    def get_localizacion(self, hop):
+
+        ips = hop.routers
+
+        if "?" in ips: 
+            ips.remove("?")
+
+        if len(ips) > 0:
+            ip = ips[0] # agarro el primer ip que veo, ?vale la pena ubicar todos los routers?
+            jresp = urllib.urlopen("http://api.hostip.info/get_json.php?ip=%s&position=true" % ip).read()
+            resp = json.loads(jresp.encode("ascii", "ignore"))
+            
+            print resp 
+
+            hop.pais = resp['country_name']
+            hop.ciudad = resp['city']
+            hop.lat = float(unicode(resp['lat'])) if resp['lat'] != None else 0.0
+            hop.lng = float(unicode(resp['lng'])) if resp['lng'] != None else 0.0
+
 
     # devuelve un arreglo de los hops que se pudieron geolocalizar
-    def get_path(self):
-        path = []
-        for ip in self.hops.values():
-            lat, lng = self.get_location(ip)
-            if lat != None and lng != None:
-                path.append((ip, float(lat), float(lng)))
+    def get_localizaciones(self):
+        for hop in self.hops:
+            self.get_localizacion(hop)
 
-        return path
+    def save_to_file(self, file):
+        with open('%s' % (file), 'w') as f:
+            f.write("hop\tips\tcant_ips\ttime\tmin_times\tmax_times\tzrtt\tdistinguido\tpais\tciudad\tlat\tlng\n")
+        
+            for hop in self.hops:         
+                f.write("%s\t[%s]\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%s\t%s\t%.4f\t%.4f\n" % 
+                    (hop.hop_num, 
+                    ",".join(hop.routers), 
+                    len(hop.routers), 
+                    hop.rtt_medio, 
+                    hop.rtt_min, 
+                    hop.rtt_max, 
+                    hop.zrtt,
+                    hop.distinguido,
+                    hop.pais, 
+                    hop.ciudad,
+                    hop.lat,
+                    hop.lng)
+                )
+            f.closed
