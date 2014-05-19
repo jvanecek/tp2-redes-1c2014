@@ -4,15 +4,29 @@ import unicodedata
 import urllib
 import json
 import sys
+import numpy
 from math import *
 from scapy.all import *
 
+class Hop:
+    hop_num = 0
+    routers = []
+    rtt_medio = 0.0
+    rtt_min = 0.0
+    rtt_max = 0.0
+    zrtt = 0.0
+    distinguido = 0
+
+    def __init__(self, ttl):
+        self.routers = []
+        self.hop_num = ttl
+
+    def add_ip(self, ip):
+        if ip not in self.routers:
+            self.routers.append( ip )
+
 class TR:
-    hops = {}
-    rtt_medio = {}
-    rtt_min = {}
-    rtt_max = {}
-    zrtt = {}
+    hops = []
 
     def request(self, host, ttl=30, timeout=1):
         cur_time = time.time()
@@ -26,53 +40,44 @@ class TR:
 
         return resp
 
-    # manda packages paquetes por ttl a host, y devuelve una tupla: (hops, times, mins, maxs, zrtt) donde: 
-    #  - hops = arreglo de hops hasta host
-    #  - times = arreglo de los promedios de los rtt por salto
-    #  - mins = arreglo de los minimos rtt por salto
-    #  - maxs = arreglo de los maximos rtt por salto
-    #  - zrtt = arreglo de los valores z de los rtt por salto
-    def send(self, host, timeout=1, packages=4):
-        self.hops = {}
-        self.rtt_medio = {}
+    # manda packages paquetes por ttl a host, y devuelve una lista de Hop
+    def send(self, host, timeout=1, packages=4, umbral=0.5):
+        self.hops = []
         ttl = 1
-        
-        ya_termino = False
-        while not ya_termino:
 
-            self.rtt_medio[ttl] = 0
-            self.rtt_min[ttl] = 0
-            self.rtt_max[ttl] = 0
+        ya_termino = False
+        while not ya_termino: 
+            hop = Hop(ttl)
 
             for i in range(0, packages):
                 ans, unans, rtt = self.request(host, ttl, timeout)
 
-                # hubo respuesta
-                if len(ans.res) > 0:  
-                    hop_ip = ans.res[0][1].src # storing the src ip from ICMP message
-
-                    self.rtt_medio[ttl] += rtt / packages
-                    self.rtt_min[ttl] = rtt if i==0 else min(self.rtt_min[ttl], rtt)
-                    self.rtt_max[ttl] = rtt if i==0 else max(self.rtt_max[ttl], rtt)
+                if len(ans.res) > 0:
+                    hop.add_ip( ans.res[0][1].src )
+                    
+                    hop.rtt_medio += rtt / packages
+                    hop.rtt_min = rtt if i==0 else min(hop.rtt_min, rtt)
+                    hop.rtt_max = rtt if i==0 else max(hop.rtt_max, rtt)
 
                     if ans.res[0][1].type == 0: # checking for ICMP echo-reply
                         ya_termino = True
 
                 # no contesto nadie
                 else:   
-                    hop_ip = "?"
+                    hop.add_ip( "?" )
 
-                if not self.hops.has_key(ttl): self.hops[ttl] = []
-                if not hop_ip in self.hops[ttl]: self.hops[ttl].append(hop_ip)
-
+            self.hops.append( hop )
             ttl += 1
 
-        rtt_promedio = sum(self.rtt_medio) / len(self.rtt_medio)
-        rtt_desvio = math.sqrt( sum([ math.pow(rtt - rtt_promedio,2) for rtt in self.rtt_medio ]) / (len(self.rtt_medio) - 1) )
-        zrtt = [ (rtt - rtt_promedio)/rtt_desvio for rtt in self.rtt_medio  ]
-        self.zrtt = dict( zip(self.rtt_medio.keys(), zrtt) )
+        rtts = [ hop.rtt_medio for hop in self.hops ]
+        rtt_promedio = numpy.mean( rtts )
+        rtt_desvio = numpy.std( rtts )
 
-        return (self.hops, self.rtt_medio, self.rtt_min, self.rtt_max, self.zrtt)
+        for i in range(0,len(rtts)): 
+            self.hops[i].zrtt = (rtts[i] - rtt_promedio)/rtt_desvio
+            self.hops[i].distinguido = (self.hops[i].zrtt > umbral)
+
+        return self.hops
 
     def send_c_scapy(self, host):
         return traceroute([host], maxttl=20, retry=-2)

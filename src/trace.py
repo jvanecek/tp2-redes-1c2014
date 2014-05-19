@@ -4,15 +4,21 @@ import json
 from math import sqrt
 from mytraceroute import * 
 
-def print_hops(file, hops, times, mins, maxs, zrtt):
+def print_hops_list( file, hops ):
     with open('%s' % (file), 'w') as f:
-        f.write("hop\tips\ttime\tcant_ips\tmin_times\tmax_times\tzrtt\n")
-        for i in hops.keys():
-            if type(hops[i]) is list:
-                f.write("%s\t[%s]" % (i, ",".join(hops[i])))
-            else:
-                f.write("%s\t%s" % (i, hops[i]))
-            f.write("\t%.4f\t%s\t%.4f\t%.4f\t%.4f\n" % (times[i], str(len(hops[i])), mins[i], maxs[i], zrtt[i]))
+        f.write("hop\tips\tcant_ips\ttime\tmin_times\tmax_times\tzrtt\tdistinguido\n")
+    
+        for hop in hops:         
+            f.write("%s\t[%s]\t%s\t%.4f\t%.4f\t%.4f\t%.4f\t%d\n" % 
+                (hop.hop_num, 
+                ",".join(hop.routers), 
+                str(len(hop.routers)), 
+                hop.rtt_medio, 
+                hop.rtt_min, 
+                hop.rtt_max, 
+                hop.zrtt,
+                hop.distinguido)
+            )
         f.closed
 
 def main(i):
@@ -22,7 +28,7 @@ def main(i):
         "www.cuhk.edu.hk"  : str(i) +"_china.txt"
     }
 
-    hosts = { "www.google.com" : "google.txt" }
+    #hosts = { "www.google.com" : "google.txt"}
 
     for host in hosts.keys():
         arch=hosts[host]
@@ -30,9 +36,9 @@ def main(i):
         print "Hora: " + str(time.time())
         print "Se guarda en: " + arch
 
-        hops, times, mins, maxs, zrtt = TR().send(host=host, packages=3)
-
-        print_hops(arch, hops, times, mins, maxs, zrtt)
+        hops = TR().send(host=host, packages=3, umbral=0.5)
+        print_hops_list(arch, hops)
+        
         print "Terminado traceroute a: "+host
 
 if __name__ == "__main__":
