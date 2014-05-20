@@ -5,6 +5,8 @@ import urllib
 import json
 import sys
 import numpy
+from bs4 import BeautifulSoup
+
 from math import *
 from scapy.all import *
 
@@ -86,9 +88,49 @@ class TR:
 
         return self.hops
 
+    def fetch_data(self, ip):
+        i = 2
+        urls = [
+            "http://api.hostip.info/get_json.php?ip=%s&position=true",
+            "http://freegeoip.net/json/%s",
+            "http://www.geoiptool.com/es/?IP=%s"
+        ];
+        
+        if i == 0:
+            jresp = urllib.urlopen( urls[0] % ip).read()
+            resp = json.loads(jresp.encode("ascii", "ignore"))
+            
+            pais = resp['country_name']
+            ciudad = resp['city']
+            lat = float(unicode(resp['lat'])) if resp['lat'] != None else 0.0
+            lng = float(unicode(resp['lng'])) if resp['lng'] != None else 0.0
+
+        elif i == 1:
+            jresp = urllib.urlopen( urls[2] % ip).read()
+            resp = json.loads(jresp.encode("ascii", "ignore"))
+            
+            pais = resp['country_name']
+            ciudad = resp['city']
+            lat = float(unicode(resp['latitude'])) 
+            lng = float(unicode(resp['longitude']))
+
+        elif i == 2:
+            html = urllib.urlopen( urls[2] % ip).read()
+            soup = BeautifulSoup(html)
+            tds = soup.findAll("table")[6].findAll("td")
+            data = [d.get_text() for d in tds]
+
+            print data
+
+            pais = data[5]
+            ciudad = data[11]
+            lng = float(unicode(data[17])) if data[17] != '' else 0.0
+            lat = float(unicode(data[19])) if data[19] != '' else 0.0
+
+        return (pais, ciudad, lat, lng)
+
     # para las direcciones privadas o mal formadas devuelve (None, None).
     def get_localizacion(self, hop):
-
         ips = hop.routers
 
         if "?" in ips: 
@@ -96,15 +138,13 @@ class TR:
 
         if len(ips) > 0:
             ip = ips[0] # agarro el primer ip que veo, ?vale la pena ubicar todos los routers?
-            jresp = urllib.urlopen("http://api.hostip.info/get_json.php?ip=%s&position=true" % ip).read()
-            resp = json.loads(jresp.encode("ascii", "ignore"))
-            
-            print resp 
 
-            hop.pais = resp['country_name']
-            hop.ciudad = resp['city']
-            hop.lat = float(unicode(resp['lat'])) if resp['lat'] != None else 0.0
-            hop.lng = float(unicode(resp['lng'])) if resp['lng'] != None else 0.0
+            pais, ciudad, lat, lng = self.fetch_data(ip)
+
+            hop.pais = pais
+            hop.ciudad = ciudad
+            hop.lat = lat
+            hop.lng = lng
 
 
     # devuelve un arreglo de los hops que se pudieron geolocalizar

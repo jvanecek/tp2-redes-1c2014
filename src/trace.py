@@ -8,8 +8,8 @@ from mytraceroute import *
 def main(pkt, umbral, localizacion):
     hosts = {
         "www.ubc.ca"       : "canada_%s.txt",
-        "www.msu.ru"       : "rusia_%s.txt",
-        "www.cuhk.edu.hk"  : "china_%s.txt"
+        #"www.msu.ru"       : "rusia_%s.txt",
+        #"www.cuhk.edu.hk"  : "china_%s.txt"
     }
 
     #hosts = { "www.google.com" : "google.txt"}
