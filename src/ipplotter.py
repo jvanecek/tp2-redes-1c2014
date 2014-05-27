@@ -4,6 +4,7 @@ from mytraceroute import Hop
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
+import numpy
 
 def parse_archivo(archivo):
 	hops_parseados = []
@@ -41,10 +42,21 @@ def zrtt(archivo):
 
 	ttl = [hop.hop_num for hop in hops if hop.rtt_medio > 0]
 	rtt = [hop.rtt_medio for hop in hops if hop.rtt_medio > 0]
+	zrtt= [hop.zrtt for hop in hops if hop.rtt_medio > 0]
+	
+	#######################################################
 	# para graficar con el rtt parcial
 	# for i in range(1, len(rtt)):
-	# 	rtt[i] = rtt[i] - rtt[i-1]
-	zrtt= [hop.zrtt for hop in hops if hop.rtt_medio > 0]
+	#  	rtt[i] = rtt[i] - rtt[i-1]
+
+	# print rtt 
+	
+	# zrtt = []
+	# rtt_promedio = numpy.mean( rtt )
+	# rtt_desvio = numpy.std( rtt )
+	# for i in range(0,len(rtt)): 
+	# 	zrtt.append(rtt[i] - rtt_promedio)/rtt_desvio
+	#######################################################
 
 	fig = plt.figure()
 	rtt_fig = fig.add_subplot(111)
@@ -79,11 +91,11 @@ def rtt_promedio_dia(archivos):
 
 def main():
 	resultados_de = "santi"
-	resultados_unv = "canada"
+	resultados_unv = "samoa"
 	archivos = glob.glob('./resultados_%s/%s_*.csv' % (resultados_de, resultados_unv) )
 
 	print archivos	
-	#zrtt(archivos[0])
+	zrtt(archivos[0])
 	rtt_promedio_dia( sorted(archivos) )
 	return
 
