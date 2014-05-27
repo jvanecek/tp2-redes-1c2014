@@ -1,16 +1,16 @@
 \section{Desarrollo}
 
 
-La implementaci\'on de nuestra herramienta consiste principalmente en una clase, la cual cuenta con los metodos necesarios para realizar el envio de paquetes $ICMP$ a un host dado, recibir las respuestas, y calcular cual es el tiempo entre el envio y la recepcion de una respuesta, y estimar cual fue la ruta de los paquetes. 
+La implementaci\'on de nuestra herramienta consiste principalmente en una clase, la cual cuenta con los m\'etodos necesarios para realizar el envio de paquetes $ICMP$ a un host dado, recibir las respuestas, y calcular cu\'al es el tiempo entre el env\'io y la recepci\'on de una respuesta, y estimar cu\'al fue la ruta de los paquetes. 
 
-Para poder estimar la ruta de los paquetes hasta el destino, la estrategia utilizada ser\'a incrementar el valor del campo $ttl$ en 1, asi empezando con un $ttl = 1$ iremos obteniendo una respuesta $ICMP$ de tipo $time exceeded$ para cada salto. De esta manera, iremos guardando la informac\'on obtenida para cada valor del $ttl$, y rastreando la ruta de los paquetes.
+Para poder estimar la ruta de los paquetes hasta el destino, la estrategia utilizada ser\'a incrementar el valor del campo $ttl$ en 1, as\'i empezando con un $ttl = 1$ iremos obteniendo una respuesta $ICMP$ de tipo $time exceeded$ para cada salto. De esta manera, iremos guardando la informac\'on obtenida para cada valor del $ttl$, y rastreando la ruta de los paquetes.
 
-Debido a que en cada medici\'on los resultados obtenidos presentan variaciones, lo que hacemos es estimar los tiempos obtenidos realizando un promedio sobre cada tiempo. Por lo tanto, enviaremos mas de un paquete por $ttl$, con el objetivo de evitar malas estimaciones causadas por cirscunstancias extraordinarias en un instante dado.
+Debido a que en cada medici\'on los resultados obtenidos presentan variaciones, lo que hacemos es estimar los tiempos obtenidos realizando un promedio sobre cada tiempo. Por lo tanto, enviaremos m\'as de un paquete por $ttl$, con el objetivo de evitar malas estimaciones causadas por cirscunstancias extraordinarias en un instante dado.
 
-Por otro lado, utilizaremos herramientas de geolocalizaci\'on, que nos permiten estimar la ubicaci\'on de los routers a traves de los cuales se fordwardearon los paquetes y dibujar su recorrido en un mapa. Esto es de gran utilidad a la hora de corroborar cuales saltos se corresponden con enlaces submarinos.
+Por otro lado, utilizaremos herramientas de geolocalizaci\'on, que nos permiten estimar la ubicaci\'on de los routers a trav\'es de los cu\'ales se fordwardearon los paquetes y dibujar su recorrido en un mapa. Esto es de gran utilidad a la hora de corroborar qu\'e saltos se corresponden con enlaces submarinos.
 
 Nuestra herramienta nos permite correr el algoritmo para distintos destinos, cambiando la cantidad de paquetes por ttl, el umbral y tambien la herramienta de geolocalizaci\'on utilizada, para asi poder tener una mayor cantidad de posibilidades a la hora de experimentar.
-Adem\'as se implemento una herramienta de control de ejecuci\'on, la cual nos permite correr el algoritmo cada cierto intervalo de tiempo, y tener resultados para distintos momentos del dia. Nosotros utilizaremos intervalos de 1 hora.
+Adem\'as se implemento una herramienta de control de ejecuci\'on, la cual nos permite correr el algoritmo cada cierto intervalo de tiempo, y tener resultados para distintos momentos del d\'ia. Nosotros utilizaremos intervalos de 1 hora.
 
 
 Los resultados son almacenados en archivos de texto, para poder contar con la informaci\'on a la hora de graficar y analizar los resultados.
