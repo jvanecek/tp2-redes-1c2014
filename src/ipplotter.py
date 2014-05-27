@@ -55,7 +55,7 @@ def zrtt(archivo):
 	zrtt_fig.set_ylabel('ms (zrtt)')
 
 	line1, = rtt_fig.plot(ttl, rtt)
-	line2, = zrtt_fig.plot(ttl, zrtt)
+	line2, = zrtt_fig.plot(ttl, zrtt, color='green', linestyle='dashed')
 	rtt_fig.legend([line1, line2], ['rtt', 'zrtt'])
 
 	plt.show()
@@ -92,8 +92,8 @@ def main():
 		'samoa_1405270238_api2.csv',
 		'samoa_1405270338_api2.csv'
 	]
-	zrtt(archivos[9])
-	#rtt_promedio_dia(archivos[9:12])
+	zrtt(archivos[0])
+	#rtt_promedio_dia(archivos[0:3])
 	return
 
 if __name__ == "__main__":
