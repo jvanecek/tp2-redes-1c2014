@@ -1,10 +1,9 @@
-\section{Introducción}
-
-El objetivo principal de este trabajo práctico es el de analizar el protocolo utilizado a nivel de red. Con ese fin se utilizan diversas herramientas y técnicas. Una de ellas consiste en el $traceroute$ brindado por el sistema operativo y otra la desarrolla en Scapy. 
+Este trabajo pr\'actico fue realizado con el objetivo de entender el protocolo ICMP y de implementar nuestra propia herramienta de traceroute utilizando este protocolo de control, para finalmente poder realizar un analisis sobre los resultados obtenidos que nos permita entender un poco mejor que es lo que realmente sucede.
+Con ese fin se utilizan diversas herramientas y técnicas. Una de ellas consiste en el $traceroute$ brindado por el sistema operativo y otra la desarrolla en Scapy. 
 
 En primer lugar se seleccionaron tres universidades situadas en otros diferentes continentes. Una de ellas 
-es The University of British Columbia, ubicada en la ciudad de Vancouver en Canadá. La segunda es The University of Hong Kong, ubicada en Pokfulam, Hong Kong. Otra de las universidades seleccionadas es Lomonosov Moscow State University, ubicada en Moscú, Rusia. 
+es The University of British Columbia, ubicada en la ciudad de Vancouver en Canadá. La segunda es The University of Hong Kong, ubicada en Pokfulam, Hong Kong. Otra de las universidades seleccionadas es Lomonosov Moscow State University, ubicada en Moscú, Rusia.
 
-La primera parte del trabajo consiste en realizar observaciones sobre el $Round-trip delay time$ de diferentes paquetes cuyos destinos pueden ser algunas de las universidades mencionadas. Se compararán los resultados obtenidos en distintos momentos del día y se generarán diversas conclusiones. También se observará el comportamiento de la señal en cada enlace que atraviesa para poder llegar a destino. 
+La primera parte del trabajo consiste en implementar una herramienta que nos permita estimar el $Rount Trip Time$ entre nuestro host y distintos hosts, calculando adem\'as el $valor standard$ de  cada salto con respecto a la ruta global.
 
-Por otro lado, la segunda parte consiste en definir los enlaces transatlánticos que va a utilizar un paquete desde el inicio hasta llegar al destino establecido. Para ello se implementará una heurística dada por la cátedra. Luego se propondrán nuevas técnicas para detectar los mismos. 
+Luego, procedemos a gr\'aficar y analizar los resultados obtenidos, intentando reconocer enlaces submarinos. Se tendra en cuenta para esto el $valor standard$ calculado por nuestra herramienta y se intentara encontrar un umbral que permita decidir de manera lo suficientemente acertada cuales son los enlaces submarinos.
