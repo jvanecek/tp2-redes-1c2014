@@ -1,9 +1,10 @@
 #! /usr/bin/python
 
 from mytraceroute import Hop
-from iplocator import *
 import numpy as np
 import matplotlib.pyplot as plt
+import glob
+import numpy
 
 def parse_archivo(archivo):
 	hops_parseados = []
@@ -41,10 +42,25 @@ def zrtt(archivo):
 
 	ttl = [hop.hop_num for hop in hops if hop.rtt_medio > 0]
 	rtt = [hop.rtt_medio for hop in hops if hop.rtt_medio > 0]
+	zrtt= [hop.zrtt for hop in hops if hop.rtt_medio > 0]
+	
+	#######################################################
 	# para graficar con el rtt parcial
 	# for i in range(1, len(rtt)):
-	# 	rtt[i] = rtt[i] - rtt[i-1]
-	zrtt= [hop.zrtt for hop in hops if hop.rtt_medio > 0]
+	#  	rtt[i] = rtt[i] - rtt[i-1]
+
+
+	# zrtt = []
+	# rtt_promedio = numpy.mean( rtt )
+	# rtt_desvio = numpy.std( rtt )
+	
+	# print rtt
+	# print rtt_promedio
+	# print rtt_desvio 
+
+	# for i in range(0,len(rtt)): 
+	# 	zrtt.append((rtt[i] - rtt_promedio)/rtt_desvio)
+	#######################################################
 
 	fig = plt.figure()
 	rtt_fig = fig.add_subplot(111)
@@ -64,7 +80,7 @@ def rtt_promedio_dia(archivos):
 
 	legends = []
 	for archivo in archivos:
-		hora = archivo.split("_")[1][6:8]
+		hora = archivo.split("/")[2].split("_")[1][6:8]
 		legends.append(hora + " hs")
 		hops = parse_archivo(archivo)
 		
@@ -78,22 +94,12 @@ def rtt_promedio_dia(archivos):
 	plt.show()
 
 def main():
-	archivos = [
-		'canada_1405270138_api2.csv',
-		'canada_1405270239_api2.csv',
-		'canada_1405270339_api2.csv',
-		'china_1405270139_api2.csv',
-		'china_1405270239_api2.csv',
-		'china_1405270339_api2.csv',
-		'rusia_1405270137_api2.csv',
-		'rusia_1405270237_api2.csv',
-		'rusia_1405270337_api2.csv',
-		'samoa_1405270138_api2.csv',
-		'samoa_1405270238_api2.csv',
-		'samoa_1405270338_api2.csv'
-	]
-	zrtt(archivos[0])
-	#rtt_promedio_dia(archivos[0:3])
+	resultados_de = "juan"
+	resultados_unv = "samoa"
+	archivos = glob.glob('./resultados_%s/%s_*.csv' % (resultados_de, resultados_unv) )
+
+	# zrtt(archivos[0])
+	rtt_promedio_dia( sorted(archivos) )
 	return
 
 if __name__ == "__main__":
