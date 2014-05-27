@@ -49,13 +49,17 @@ def zrtt(archivo):
 	# for i in range(1, len(rtt)):
 	#  	rtt[i] = rtt[i] - rtt[i-1]
 
-	# print rtt 
-	
+
 	# zrtt = []
 	# rtt_promedio = numpy.mean( rtt )
 	# rtt_desvio = numpy.std( rtt )
+	
+	# print rtt
+	# print rtt_promedio
+	# print rtt_desvio 
+
 	# for i in range(0,len(rtt)): 
-	# 	zrtt.append(rtt[i] - rtt_promedio)/rtt_desvio
+	# 	zrtt.append((rtt[i] - rtt_promedio)/rtt_desvio)
 	#######################################################
 
 	fig = plt.figure()
@@ -90,12 +94,11 @@ def rtt_promedio_dia(archivos):
 	plt.show()
 
 def main():
-	resultados_de = "santi"
+	resultados_de = "juan"
 	resultados_unv = "samoa"
 	archivos = glob.glob('./resultados_%s/%s_*.csv' % (resultados_de, resultados_unv) )
 
-	print archivos	
-	zrtt(archivos[0])
+	# zrtt(archivos[0])
 	rtt_promedio_dia( sorted(archivos) )
 	return
 
