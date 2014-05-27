@@ -7,14 +7,14 @@ from mytraceroute import *
 
 def main(pkt, umbral, localizacion):
     hosts = {
-        "www.ubc.ca"       : "canada_%s.txt",
-        "www.msu.ru"       : "rusia_%s.txt",
-        "www.cuhk.edu.hk"  : "china_%s.txt",
-        "www.nus.edu.ws"   : "samoa_%s.txt",
-        #"web.up.ac.za"     : "safrica_%s.txt"
+        "www.ubc.ca"       : "canada_%s.csv",
+        "www.msu.ru"       : "rusia_%s.csv",
+        "www.cuhk.edu.hk"  : "china_%s.csv",
+        "www.nus.edu.ws"   : "samoa_%s.csv",
+        #"web.up.ac.za"     : "safrica_%s.csv"
     }
 
-    #hosts = { "www.google.com" : "google.txt"}
+    #hosts = { "www.google.com" : "google.csv"}
 
     for host in hosts.keys():
         arch = hosts[host] % (datetime.now().strftime("%y%m%d%H%M"))

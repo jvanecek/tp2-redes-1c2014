@@ -41,7 +41,7 @@ class TR:
         resp += (rtt, )
 
         with open('log.txt', 'a') as f:
-            f.write("%s\t%s\t%s\n" % (host, ttl, rtt) )
+            f.write("%s,%s,%s\n" % (host, ttl, rtt) )
             f.closed
 
         return resp
@@ -154,12 +154,12 @@ class TR:
 
     def save_to_file(self, file):
         with open('%s' % (file), 'w') as f:
-            f.write("hop\tips\tcant_ips\ttime\tmin_times\tmax_times\tzrtt\tdistinguido\tpais\tciudad\tlat\tlng\n")
+            f.write("hop,ips,cant_ips,time,min_times,max_times,zrtt,distinguido,pais,ciudad,lat lng\n")
         
             for hop in self.hops:         
-                f.write("%s\t[%s]\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%s\t%s\t%.4f\t%.4f\n" % 
+                f.write("%s,[%s],%d,%.4f,%.4f,%.4f,%.4f,%d,%s,%s,%.4f %.4f\n" % 
                     (hop.hop_num, 
-                    ",".join(hop.routers), 
+                    ";".join(hop.routers), 
                     len(hop.routers), 
                     hop.rtt_medio, 
                     hop.rtt_min, 
