@@ -47,7 +47,7 @@ class TR:
         return resp
 
     # manda packages paquetes por ttl a host, y devuelve una lista de Hop
-    def send(self, host, timeout=1, packages=4, umbral=0.5, localizacion=False):
+    def send(self, host, timeout=1, packages=4, umbral=0.5, localizacion=False, api=2):
         self.hops = []
         ttl = 1
 
@@ -84,38 +84,39 @@ class TR:
             self.hops[i].distinguido = (self.hops[i].zrtt > umbral)
 
         if localizacion: 
-            self.get_localizaciones()
+            self.get_localizaciones(api)
 
         return self.hops
 
-    def fetch_data(self, ip):
-        i = 2
+    def fetch_data(self, ip, api):
         urls = [
             "http://api.hostip.info/get_json.php?ip=%s&position=true",
             "http://freegeoip.net/json/%s",
             "http://www.geoiptool.com/es/?IP=%s"
         ];
         
-        if i == 0:
-            jresp = urllib.urlopen( urls[0] % ip).read()
-            resp = json.loads(jresp.encode("ascii", "ignore"))
+        html = urllib.urlopen( urls[api] % ip).read()
+        if api == 0:
+            resp = json.loads(html.encode("ascii", "ignore"))
             
+            print resp 
+
             pais = resp['country_name']
             ciudad = resp['city']
             lat = float(unicode(resp['lat'])) if resp['lat'] != None else 0.0
             lng = float(unicode(resp['lng'])) if resp['lng'] != None else 0.0
 
-        elif i == 1:
-            jresp = urllib.urlopen( urls[2] % ip).read()
-            resp = json.loads(jresp.encode("ascii", "ignore"))
+        elif api == 1:
+            resp = json.loads(html.encode("ascii", "ignore"))
             
+            print resp 
+
             pais = resp['country_name']
             ciudad = resp['city']
             lat = float(unicode(resp['latitude'])) 
             lng = float(unicode(resp['longitude']))
 
-        elif i == 2:
-            html = urllib.urlopen( urls[2] % ip).read()
+        elif api == 2:
             soup = BeautifulSoup(html)
             tds = soup.findAll("table")[6].findAll("td")
             data = [d.get_text() for d in tds]
@@ -130,7 +131,7 @@ class TR:
         return (pais, ciudad, lat, lng)
 
     # para las direcciones privadas o mal formadas devuelve (None, None).
-    def get_localizacion(self, hop):
+    def get_localizacion(self, hop, api):
         ips = hop.routers
 
         if "?" in ips: 
@@ -139,7 +140,7 @@ class TR:
         if len(ips) > 0:
             ip = ips[0] # agarro el primer ip que veo, ?vale la pena ubicar todos los routers?
 
-            pais, ciudad, lat, lng = self.fetch_data(ip)
+            pais, ciudad, lat, lng = self.fetch_data(ip, api)
 
             hop.pais = pais
             hop.ciudad = ciudad
@@ -148,9 +149,9 @@ class TR:
 
 
     # devuelve un arreglo de los hops que se pudieron geolocalizar
-    def get_localizaciones(self):
+    def get_localizaciones(self, api):
         for hop in self.hops:
-            self.get_localizacion(hop)
+            self.get_localizacion(hop, api)
 
     def save_to_file(self, file):
         with open('%s' % (file), 'w') as f:
