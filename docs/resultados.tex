@@ -5,7 +5,7 @@ En cuanto a esta ultima universidad nombrada, nos encontramos con que no pudimos
 Por este motivo no utilizamos este caso de estudio en los gr\'aficos y analisis.
 
 
-\subsection{Primera parte: selección de las universidades}
+\subsection{Selección de las universidades}
 Las 4 universidades de distintas partes del mundo seleccionadas para llevar a cabo el análisis requerido son las siguientes: 
 
 \begin{itemize}
@@ -38,7 +38,7 @@ Las 4 universidades de distintas partes del mundo seleccionadas para llevar a ca
 Las distancias descriptas corresponden a la distancia lineal que hay entre la universidad y un punto en común en Buenos Aires.
 
 
-\subsection{Segunda Parte: Correr nuestro Traceroute}
+\subsection{Primera Parte: Correr nuestro Traceroute}
 
 Se ejecutó el traceroute implementado por nosotros utilizando Scapy a lo largo de un día, con intervalos de una hora. El traceroute envía 20 paquetes a cada hop, para lograr un promedio más ajustado del RTT.
 
@@ -74,6 +74,10 @@ Para todas las API's se puede observar un aumento considerable del RTT entre dos
 Por ejemplo, en el gráfico \ref{fig:canada_santi}, el RTT tiene un aumento vertiginoso entre el TLL 4 y el 5, que es cuando los paquetes llegan a Estados Unidos. Sucede algo similar en \ref{fig:canada_dani} sólo que se da entre el TLL 7 y el 8 en algunos casos y entre el 8 y el 9 en otros. También en ambos casos según cada corrida del traceroute coincide con el momento en que se envían paquetes a Estados Unidos. En \ref{fig:canada_juan} se da una situación similar entre los TLL's 6 y 7 y 8 y 9 también coincidiendo con un salto de los paquetes entre Argentina y Estados Unidos
 
 Con respecto a las pruebas realizadas para China, en el gráfico \ref{fig:china_santi} se observan dos saltos claros entre los TLL's 4 y 5 y 6 y 7 que coinciden con dos saltos entre distintas regiones de Estados Unidos. Curiosamente, el salto entre Estados Unidos y Hong Kong no presenta un RTT mucho mayor que aquel que iba a dos regiones distintas de Estados Unidos. Se puede observar algo similar en el gráfico \ref{fig:china_dani }y \ref{fig:china_juan} en el mismo salto (que tiene como destino una IP perteneciente a la ciudad de Miami) sólo que en estos casos es entre las TLL's 9 y 10.
+
+La situación respecto a los gráficos de las pruebas realizadas para la universidad de Moscú presentan una anomalía similar a la de la universidad de Hong Kong. En todos se observa un salto más pronunciado que el resto (entre las TLL's 8 y 9 para \ref{fig:rusia_dani}, 9 y 10 para \ref{fig:rusia_juan}) y 4 y 5 para\ref{fig:rusia_santi}) que coincide con dos regiones de los Estados Unidos (las mismas para todas las API's). Interpretamos que esta situación puede ser causada porque si bien la IP pertenece a las direcciones IP's de los Estados Unidos el servidor puede encontrarse en verdad en una zona geográfica más lejana.
+
+ Finalmente, en Samoa se da una situación particular: la dirección IP final del dominio de la Universidad pertenece a los Estados Unidos. Producto de una investigación y del análisis del mapa, pudimos establecer una teoría acerca de esta anomalía. A saber, que las islas pertenecientes al archipiélago en el cuál se encentra Samoa pertenecen a los Estados Unidos. Creemos que una posible explicación a este fenómeno es que Samoa no tiene ISP y utiliza los de las colonias vecinas.
 
 Además, varios gráficos presentan picos de RTT injustificados para una hora determinada. Este puede ser el caso de los gráficos \ref{fig:rusia_juan} y \ref{fig:canada_juan}, y consideramos estos picos como producto de alguna anomalía, dado que sólo ocurrieron una única vez en todas las pruebas. Por otro lado, los paquetes que no obtuvieron respuesta se pueden apreciar como un pico decreciente que llega hasta el valor 0 (que es como se representa a los paquetes que nunca retornaron).
 
