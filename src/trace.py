@@ -10,8 +10,8 @@ def main(pkt, umbral, localizacion):
         "www.ubc.ca"       : "canada_%s.txt",
         "www.msu.ru"       : "rusia_%s.txt",
         "www.cuhk.edu.hk"  : "china_%s.txt",
-	"www.nus.edu.ws"   : "samoa_%s.txt",
-	"web.up.ac.za"     : "safrica_%s.txt"
+        "www.nus.edu.ws"   : "samoa_%s.txt",
+        #"web.up.ac.za"     : "safrica_%s.txt"
     }
 
     #hosts = { "www.google.com" : "google.txt"}

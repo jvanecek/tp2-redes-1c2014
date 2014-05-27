@@ -1,0 +1,219 @@
+\section{Desarrollo}
+\subsection{Primera parte: estimación de RTT}
+Las 3 universidades de distintas partes del mundo seleccionadas para llevar a cabo el análisis requerido son las siguientes: 
+
+\begin{itemize}
+ \item {\bf The University British of Columbia}
+ 
+	{\bf Distancia}: 11302.14 km 
+	
+	{\bf IP}: 137.82.130.49 (\url{www.ubc.ca}{})
+ 
+ \item {\bf Lomonosov Moscow State University}
+
+	{\bf Distancia}: 13481.01 km
+	
+	{\bf IP}: 93.180.0.18 (\url{www.msu.ru}{})
+ 
+ \item {\bf The Chinese University of Hong Kong}
+
+	{\bf Distancia}: 18511.04 km
+	
+	{\bf IP}: 137.189.11.73 (\url{www.cuhk.edu.hk})
+ 
+\end{itemize}
+
+Las distancias descriptas corresponden a la distancia lineal que hay entre la universidad y un punto en común en Buenos Aires. Ese dato permitirá obtener el RTT aproximado de un paquete para cada una de las universidades. 
+
+Asumiendo que los enlaces son siempre de fibra óptica, y que el velocidad de propagación de las señales es de $2 \times 10^{5}$ km/s podemos estimar el RTT de la siguiente manera: 
+
+\begin{itemize}
+ \item The University British of Columbia: 
+\begin{equation}
+ 	RTT = 2 \times T_{prop} = 2 \times (Dist / V_{prop}) = 2 \times (11302.14 \text{ km} / 2\times10^5 \text{ km/s}) = 113.0214 \text{ ms}
+\end{equation}
+ 
+ \item Lomonosov Moscow State University: 
+ \begin{equation}
+ 	RTT = 2 \times T_{prop} = 2 \times (Dist / V_{prop}) = 2 \times (13481.01 \text{ km} / 2\times10^5 \text{ km/s}) = 134.8101  \text{ ms}
+ \end{equation}
+ 
+ \item The Chinese University of Hong Kong: 
+ \begin{equation}
+ 	RTT = 2 \times T_{prop} = 2 \times (Dist / V_{prop}) = 2 \times(18511.04 \text{ km} / 2\times10^5 \text{ km/s}) = 185.1104  \text{ ms}
+ \end{equation}
+
+\end{itemize}
+
+
+En teor\'ia, este n\'umero es una cota inferior muy burda del tiempo de comunicaci\'on que puede haber entre Buenos Aires y las universidades elegidas. Para corroborarlo se ejecutó el traceroute implementado por nosotros utilizando Scapy a lo largo de un día, con intervalos de una hora. El traceroute envía 20 paquetes a cada hop, para lograr un promedio más ajustado del RTT. Los gr\'aficos siguientes muestran el RTT final a los \'ultimos nodos, en comparaci\'on con el RTT te\'orico calculado al principio. 
+
+\ponerGrafico{graficos/traceroute_empirico_canada.png}{Canada: Traceroute vs Cota teorica}{0.5}{tr_empirico_canada}
+
+\ponerGrafico{graficos/traceroute_empirico_rusia.png}{Rusia: Traceroute vs Cota teorica}{0.5}{tr_empirico_rusia}
+
+\ponerGrafico{graficos/traceroute_empirico_china.png}{China: Traceroute vs Cota teorica}{0.5}{tr_empirico_china}
+
+Queda claro que sea cual sea el horario en que se transmite un paquete por la red, se cumple que el RTT es por lo menos el esperado. 
+
+Se puede notar una clara diferencia entre el tiempo teórico calculado y el RTT obtenido como resultado en tiempo real. Eso se debe a que el cálculo realizado considera que el camino que realiza el pequete para poder llegar a destino es recto y no tiene en cuenta el tiempo de espera en los enlances, entre otras cosas. \\
+
+Luego se comparó nuestro traceroute implementado con el traceroute provisto por el sistema operativo, obteniendo así los siguientes resultados: 
+
+\ponerGrafico{graficos/RTT-trace-vs-scapy-canada.png}{Canada: Traceroute vs Scapy}{0.6}{}
+
+\ponerGrafico{graficos/RTT-trace-vs-scapy-rusia.png}{Rusia: Traceroute vs Scapy}{0.6}{}
+
+\ponerGrafico{graficos/RTT-trace-vs-scapy-china.png}{China: Traceroute vs Scapy}{0.6}{}
+
+$media\_tr$ es el promedio de los tres paquetes enviados por el traceroute del sistema operativo, y $media\_scapy$ es el an\'alogo del traceroute implementado por nosotros. Se esperaba que el nativo del sistema funcionara m\'as r\'apido, debido a que, en el tiempo que cuenta, no entra el parseo y procesado que desarrolla Scapy sobre los paquetes. Si bien la relaci\'on de los tiempos se mantiene constante, es importante destacar que los factores que afectan a una diferencia de tiempo están fuertemente relacionados con el tiempo de espera en cada enlace, que va variando de manera rápida. 
+
+Notemos que el salto de tiempo que se produce en el tiempo en el hop 7 u 8, se debe a que es un hop transatl\'antico y por tanto la amplia diferencia de tiempo de respuesta. Este tema se desarrollará en profundidad más adelante. \\
+
+Tambi\'en se dise\~nó un experimento para poder analizar el tr\'afico de la red en distintas horas del d\'ia. Para ello se ejecutó el traceroute a cada hora durante 20 hs, promediando el RTT de 20 paquetes por hop y se obtuvieron los siguientes gr\'aficos.
+
+\ponerGrafico{./graficos/traceroute_canada_int5.png}{Traceroute a Canad\'a a lo largo de un d\'ia}{0.5}{}
+
+\ponerGrafico{./graficos/traceroute_rusia_int5.png}{Traceroute a Rusia a lo largo de un d\'ia}{0.5}{}
+
+\ponerGrafico{./graficos/traceroute_china_int5.png}{Traceroute a China a lo largo de un d\'ia}{0.5}{}
+
+Estos horarios corresponden a un domingo a la madrugada empezando a la 1 am de Argentina. En ese momento en Rusia eran las 7 am del domingo, en Hong Kong en China eran las 12 am y en Vancuver en Canad\'a las 11 pm del s\'abado. \\
+
+Luego, para estimar el tiempo de encolamiento en cada uno de los enlaces se utilizó el siguiente criterio:
+\begin{itemize}
+\item Se toma al menor de todos los tiempos de respuesta percibidos para cada enlace como el caso en que la cola está vacia.
+\item Asimismo se asume que el máximo de dichos tiempos corresponde al caso de la cola llena.
+\end{itemize}
+Basándose en estas suposiciones, se calculó la diferencia entre el tiempo máximo y mínimo para cada enlace para calcular el tiempo de encolamiento total, y luego se realizó el mismo
+cálculo entre el tiempo promedio y el mínimo para estimar el tiempo de encolamiento promedio. \\
+
+Este proceso se aplicó a las mediciones obtenidas para los hops de cada camino y se obtuvieron los siguientes resultados:
+
+\ponerGrafico{graficos/canada-encolamiento.png}{Canada: Tiempo de encolamiento para cada hop}{0.6}{}
+\ponerGrafico{graficos/china-encolamiento.png}{China: Tiempo de encolamiento para cada hop}{0.6}{}
+\ponerGrafico{graficos/rusia-encolamiento.png}{Rusia: Tiempo de encolamiento para cada hop}{0.6}{}
+
+En los gráficos se observan algunos puntos enlaces con encolamiento nulo, éstos son los enlaces que no responden, por lo cual no podemos realizar estimaciones sobre ellos.
+
+A su vez es probable que al tomar el tiempo de respuesta máximo probablemente también intervenga el tiempo de encolamiento en los hops anteriores. En los dos primeros gráficos se
+puede observar que los valores correspondientes a los ultimos hops son mayores, lo que podría deberse a dicha razón.
+
+\subsection{Segunda parte: búsqueda de enlaces transatlánticos}
+
+En la segunda parte del trabajo práctico se requiere determinar los enlaces transatlánticos que utiliza en paquete para llegar a destino. Estos enlaces se caracterizan por atravezar el el Atlántico, por lo tanto poseen ciertas propiedades que los diferencian de los demás. \\
+
+Para poder detectar posibles enlaces transatlánticos se desarrolló la heurística presentada por la cátedra. La misma consiste en ir recorriendo cada enlace por el que pasa una señal y analizar los tiempos que tardó de un hop a otro. 
+
+El procedimiento que sigue la heurística es el siguiente:
+\begin{itemize}
+	\item Se calcula el promedio de todos los RTTs entre cada par de hops sucesivos durante la ejecución del traceroute implementado en Scapy
+	\item Se determina el desvío estandar de las mediciones obtenidas en la ejecución del traceroute
+	\item Se define a la variable $m$ como igual a dos.
+	\item Para cada enlace se comprueba si cumplen la siguiente inecuación: 
+	\begin{equation}
+		r > R + m * d
+	\end{equation}
+	siendo r el tiempo transcurrido entre cada par de hops de ese enlace. Si se cumple, entonces ese enlace corresponde a uno transatlántico.
+\end{itemize}
+
+Luego de aplicar la heurística a cada una de las universidades, se pudo observar que la considera en algunos casos de manera correcta al enlace y en otros no. 
+
+Un ejemplo de cuando no funciona la heurística presentada, es aquel paquete que no utiliza por ningún enlace transatlántico. El algoritmo se basa en los tiempos transcurridos entre cada hops, por lo tanto no interesa si pasó o no por algún enlace específico, y devolverá como potencial a aquel que no corresponda. 
+
+\ponerGrafico{graficos/iplocatorcanada.png}{Ubicación de los enlaces que utiliza un paquete con destino www.ubc.ca}{0.5}{CanadaIp}
+
+\begin{center}
+\scalebox{0.7}[1]{
+ \begin{tabular}{|l|l|l|l|l|l|}
+    \hline
+    Hop & dirección IP & País & Ciudad & ISP & Lat - Long 	\\
+    \hline
+    1 & 190.16.130.1 & Argentina & Martinez & Cablevision & -34.4899 -58.5111	\\
+    5 & 200.89.166.209 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    6 & 200.89.165.129 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    7 & 200.89.165.150 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    8 & 64.214.130.253 & United States & 0 & Level 3 Communications & 38.0 -97.0	\\
+    9 & 64.214.130.253 & United States & 0 & Level 3 Communications & 38.0 -97.0	\\
+    10 & 72.52.92.158 & United States & Fremont & Hurricane Electric & 37.5155 -121.8962	\\
+    11 & 184.105.222.2 & United States & Fremont & Hurricane Electric & 37.5155 -121.8962	\\
+    12 & 184.105.148.150 & United States & Fremont & Hurricane Electric & 37.5155 -121.8962	\\
+    13 & 207.23.240.85 & Canada & Vancouver & BCnet & 49.2836 -123.1041	\\
+    14 & 137.82.123.138 & Canada & Vancouver & University of British Columbia & 49.2765 -123.2177	\\
+    15 & 137.82.123.65 & Canada & Vancouver & University of British Columbia & 49.2765 -123.2177	\\
+    17 & 137.82.130.49 & Canada & Vancouver & University of British Columbia & 49.2765 -123.2177 \\
+    \hline
+ \end{tabular}}
+\end{center}
+
+De acuerdo a la heurística desarrollada, el enlace trasatlántico se encuentra el marcador con la letra $L$, y corresponde al que se encuentra entre el hop $15$ y el $16$. 
+
+Este caso no es considerado válido, ya que corresponde a un enlace entre una dirección IP conocida y otra no. Esta última no se saben datos, ya que la herramienta, al llegar el paquete a ese hop no recibió respuesta que permita considerarlo. No brinda información necesario para poder determinar los tiempos del enlace o la dirección IP necesaria. La heurísta, al calcular el tiempo entre cada hops, obtendrá como resultado al tiempo en el que tarda el paquete en llegar a la dirección IP conocida de ese enlace (debido a que se calcula mediante la diferencia de tiempo entre un hop y el consecutivo), siendo así mucho mayor al de los demás. 
+
+\ponerGrafico{graficos/iplocatorchina.png}{Ubicación de los enlaces que utiliza un paquete con destino www.cuhk.edu.hk}{0.6}{ChinaIp}
+
+\begin{center}
+\scalebox{0.7}[1]{
+ \begin{tabular}{|l|l|l|l|l|l|}
+    \hline 
+    Hop & dirección IP & País & Ciudad & ISP & Lat - Long \\
+    \hline
+    1 & 190.16.130.1 & Argentina & Martinez & Cablevision & -34.4899 -58.5111	\\
+    5 & 200.89.166.209 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    6 & 200.89.165.129 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    7 & 200.89.165.150 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    8 & 195.22.220.56 & Italy & 0 & TELECOM ITALIA SPARKLE S.p.A. & 42.8333 12.8333	\\
+    9 & 195.22.223.164 & Italy & 0 & TELECOM ITALIA SPARKLE S.p.A. & 42.8333 12.8333	\\
+    10 & 195.22.223.142 & Italy & 0 & TELECOM ITALIA SPARKLE S.p.A. & 42.8333 12.8333 \\
+    11 & 115.160.187.102 & Hong Kong & Central District & Wharf T\&T Limited & 22.2833 114.15	\\
+    12 & 175.45.11.98 & Hong Kong & Kwun Tong & Wharf T\&T Limited & 22.3167 114.2167	\\
+    13 & 203.188.117.34 & Hong Kong & 0 & Joint Universities Computer Centre Limited & 22.25 114.1667	\\
+    14 & 137.189.192.250 & Hong Kong & 0 & CUHK & 22.25 114.1667	\\
+    15 & 137.189.9.57 & Hong Kong & 0 & CUHK & 22.25 114.1667	\\
+    16 & 137.189.11.73 & Hong Kong & 0 & CUHK & 22.25 114.1667	\\
+    \hline
+ \end{tabular}}
+\end{center}
+
+El algoritmo que detecta los posibles enlaces transatlánticos considera de manera correcta al enlace ubicado entre el punto $D$ y el $G$. Ese enlace posee como extremo a los hops $7$ y $8$, que correponde el primero a Argentina y el segundo está ubicado en Italia. Es notorio que corresponde a un enlace transatlántico, de acuerdo a lo que se puede observar en el mapa. El tiempo transcurrido entre que un paquete pasa por la dirección IP correspondiente a Buenos Aires y llega a la de Italia, es lo suficientemente alto para poder ser considerado como el enlace transatlántico de acuerdo a la heurística.
+
+\ponerGrafico{graficos/iplocatorrusia.png}{Ubicación de los enlaces que utiliza un paquete con destino www.msu.ru}{0.45}{RusiaIp}
+
+\begin{center}
+\scalebox{0.7}[1]{
+ \begin{tabular}{|l|l|l|l|l|l|}
+    \hline
+       Hop & dirección IP & País & Ciudad & ISP & Lat - Long 	\\
+    \hline
+    1 & 190.16.130.1 & Argentina & Martinez & Cablevision & -34.4899 -58.5111	\\
+    5 & 200.89.166.197 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    6 & 200.89.165.198 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    7 & 200.89.165.86 & Argentina & Munro & Cablevision & -34.5309 -58.5201	\\
+    8 & 67.17.156.165 & United States & 0 & Level 3 Communications & 38.0 -97.0	\\
+    9 & 67.17.74.42 & United States & 0 & Level 3 Communications & 38.0 -97.0	\\
+    10 & 146.82.54.2 & United States & Channelview & Level 3 Communications & 29.7908 -95.1091	\\
+    11 & 194.85.40.129 & Russian Federation & 0 & State Institute of Information Technologies and Te &  60.0 100.0	\\
+    12 & 194.85.40.229 & Russian Federation & 0 & State Institute of Information Technologies and Te & 60.0 100.0	\\
+    13 & 194190254118 & Russian Federation & 0 & State Institute of Information Technologies and Te & 60.0 100.0	\\
+    14 & 93.180.0.172 & Russian Federation & Moscow & Federal State Educational Institution of Higher Pr &  55.7522 37.6156	\\
+    15 & 188.44.33.1 & Russian Federation & Moscow & Federal State Educational Institution of Higher Pr & 55.7522 37.6156	\\
+    16 & 188.44.33.34 & Russian Federation & Moscow & Federal State Educational Institution of Higher Pr & 55.7522 37.6156	\\
+    17 & 93.180.0.18 & Russian Federation & Moscow & Federal State Educational Institution of Higher Pr & 55.7522 37.6156 \\
+    \hline
+ \end{tabular}}
+\end{center}
+
+Se puede observar en el mapa, que la heurística debería considerar al enlace entre la marcación $G$ y la $H$, como aquella transatlántica. Sin embargo el resultado obtenido correponde a un enlace de una distancia muy pequeña que ocurre entre dos hops ubicados en la ciudad de Buenos Aires. Esto se debe, a que el tiempo de espera de un paquete entre esos dos hops es mucho mayor al de otros enlaces con mayor distancia distancia. \\
+
+La heurística presentada contiene una variable $m$, cuyo valor es establecido en $dos$ para las pruebas realizadas anteriormente. Este valor influye en el desvío estandar calculado y por lo tanto genera un aumento o disminución de la cota que determina cuales de los enlaces corresponde a uno transatlántico. 
+
+Para poder observar el comportamiento de la variable $m$ sobre los resultados, se decidió modificar la heurística, en primer lugar, disminuyendo ese valor. Luego se analizaron los nuevos resultados obtenidos para un paquete cuyo destino es la página web de la Universidad British of Columbia. \\
+
+Anteriormente se observó que con $m$ igual a $dos$, el enlace transatlántico obtenido como resultado no era válido. Si se le asigna a $m$ un valor menor, entonces se tendrá una mayor cantidad de potenciales enlaces transatlánticos. Esto se debe a que la variable modificada influye sobre la cota de tiempo que se utiliza para determinar que si el tiempo transcurrido entre dos hops corresponde al de un enlace transatlántico. Uno de ellos corresponde a los que se encuentran entre los puntos $D$ y $F$ del mapa de la figura (\ref{fig:CanadaIp}). Realmente no corresponde a un enlace que atraviese el Atlántico, pero si posee un tiempo de espera lo suficientemente grande para que sea considerado como uno. 
+
+Si la variable $m$ es incrementada entonces es posible que se ignoren enlaces que sí pertenecen a uno transatlántico. El efecto de realizar esta acción es el de aumentar la cota de tiempo que compara cada enlace y determina a que tipo corresponde. \\
+
+La heurística desarrollada presenta soluciones correctas dependiendo del caso planteado. Al contemplar hops que no responde al protocolo, es decir que son enlaces no válidos, la heurística no resuelve de manera correcta los resultados. Por otro lado, si no se presentan esos escenarios, se observa un correcto comportamiento del algoritmo, ya que los resultados son los esperados. \\
+
+Una posible manera de determinar qué enlace corresponde a uno transatlántico podría ser considerando las latitudes y longitudes de las direcciones IPs por los que pasa la señal enviada. Tomando esa propiedad de cada hop de los extremos de un enlace se puede determinar la distancia existente. Por lo tanto si la misma es mayor a cierta cota planteada, entonces corresponderá al enlace transatlántico buscado. 
+
