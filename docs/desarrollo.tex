@@ -1,3 +1,6 @@
+\section{Desarrollo}
+
+
 La implementaci\'on de nuestra herramienta consiste principalmente en una clase, la cual cuenta con los metodos necesarios para realizar el envio de paquetes $ICMP$ a un host dado, recibir las respuestas, y calcular cual es el tiempo entre el envio y la recepcion de una respuesta. 
 
 Para poder estimar la ruta de los paquetes hasta el destino, la estrategia utilizada ser\'a incrementar el valor del campo $ttl$ en 1, asi empezando con un $ttl = 1$ iremos obteniendo una respuesta $ICMP$ de tipo $time exceeded$ para cada salto. De esta manera, iremos guardando la informac\'on obtenida para cada valor del $ttl$, y rastreando la ruta de los paquetes.
