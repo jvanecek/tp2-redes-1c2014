@@ -118,15 +118,18 @@ class TR:
 
         elif api == 2:
             soup = BeautifulSoup(html)
-            tds = soup.findAll("table")[6].findAll("td")
-            data = [d.get_text() for d in tds]
 
-            print data
+            tables = soup.findAll("table")
+            if( len(tables) > 6 ):
+                tds = tables[6].findAll("td")
+                data = [d.get_text() for d in tds]
 
-            pais = data[5]
-            ciudad = data[11]
-            lng = float(unicode(data[17])) if data[17] != '' else 0.0
-            lat = float(unicode(data[19])) if data[19] != '' else 0.0
+                print data
+
+                pais = data[5]
+                ciudad = data[11]
+                lng = float(unicode(data[17])) if data[17] != '' else 0.0
+                lat = float(unicode(data[19])) if data[19] != '' else 0.0
 
         return (pais, ciudad, lat, lng)
 
