@@ -1,0 +1,125 @@
+\section{Resultados}	
+A continuaci\'on presentaremos los distintos gr\'aficos y analisis realizados, en relacion a las 4 universidades elegidas. Merece nombrarse, que se habia elegido una universidad m\'as, llamada University of Pretoria.
+
+En cuanto a esta ultima universidad nombrada, nos encontramos con que no pudimos rastrear su ruta. Lo que obtuvimos en nuestros intentos, fue siempre el mismo resultado. Incrementamos el $ttl$ hasta obtener un $ubyte$ overflow. El valor de nuestro $ttl$ se fue del rango $0 < ttl < 255$.
+Por este motivo no utilizamos este caso de estudio en los gr\'aficos y analisis.
+
+
+\subsection{Selección de las universidades}
+Las 4 universidades de distintas partes del mundo seleccionadas para llevar a cabo el análisis requerido son las siguientes: 
+
+\begin{itemize}
+ \item {\bf The University of British Columbia}
+ 
+	{\bf Distancia}: 11302.14 km 
+	
+	{\bf IP}: 137.82.130.49 (\url{www.ubc.ca}{})
+ 
+ \item {\bf Lomonosov Moscow State University}
+
+	{\bf Distancia}: 13481.01 km
+	
+	{\bf IP}: 93.180.0.18 (\url{www.msu.ru}{})
+ 
+ \item {\bf The Chinese University of Hong Kong}
+
+	{\bf Distancia}: 18511.04 km
+	
+	{\bf IP}: 137.189.11.73 (\url{www.cuhk.edu.hk})
+ 
+ \item {\bf National University Of Samoa}
+ 
+	{\bf Distancia}: 10771.06 km
+	
+	{\bf IP}: 23.229.137.67 (\url{www.nus.edu.ws/}{})
+ 
+\end{itemize}
+
+Las distancias descriptas corresponden a la distancia lineal que hay entre la universidad y un punto en común en Buenos Aires.
+
+
+\subsection{Primera Parte: Correr nuestro Traceroute}
+
+Se ejecutó el traceroute implementado por nosotros utilizando Scapy a lo largo de un día, con intervalos de una hora. El traceroute envía 20 paquetes a cada hop, para lograr un promedio más ajustado del RTT.
+
+Evaluamos distintas herramientas de geolocalización para calcular las coordenadas y/o la localización de las IP's con el objetivo de que nuestros datos sean lo más precisos posibles.
+
+
+Los resultados obtenidos se muestran en tres gráficos distintos por cada universidad, cada uno representando una ejecución diferente del algoritmo de \textit{traceroute} desde una máquina distinta (por eso difieren con mayor grado la o las primeras IP's que devuelve el algoritmo) en la cual se utilizó una API de geolocalización distinta. En cada gráfico hay una línea por cada hora en la que se ejecutó el traceroute marcando los distintos valores de los RTT's en función de los TTL's. A continuación se muestran los gráficos:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFICOS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ponerGrafico{./graficos/canada_dani.png}{Canada Muestra 1}{0.4}{canada_dani}
+
+\ponerGrafico{./graficos/canada_santi.png}{Canada Muestra 2}{0.4}{canada_santi}
+
+\ponerGrafico{./graficos/canada_juan.png}{Canada Muestra 3}{0.4}{canada_juan}
+ 
+
+\ponerGrafico{./graficos/china_dani.png}{China Muestra 1}{0.4}{china_dani}
+\ponerGrafico{./graficos/china_santi.png}{China Muestra 2}{0.4}{china_santi}
+\ponerGrafico{./graficos/china_juan.png}{China Muestra 3}{0.4}{china_juan}
+
+ 
+\ponerGrafico{./graficos/rusia_dani.png}{Rusia Muestra 1}{0.4}{rusia_dani}
+\ponerGrafico{./graficos/rusia_santi.png}{Rusia Muestra 2}{0.4}{rusia_santi}
+\ponerGrafico{./graficos/rusia_juan.png}{Rusia Muestra 3}{0.4}{rusia_juan}
+
+ 
+\ponerGrafico{./graficos/samoa_dani.png}{Samoa Muestra 1}{0.4}{samoa_dani}
+\ponerGrafico{./graficos/samoa_santi.png}{Samoa Muestra 2}{0.4}{samoa_santi}
+\ponerGrafico{./graficos/samoa_juan.png}{Samoa Muestra 3}{0.4}{samoa_juan}
+
+Para todas las API's se puede observar un aumento considerable del RTT entre dos TLL's específicas (distintas según cada gráfico) que representa una transmisión de gran escala.
+
+Por ejemplo, en el gráfico \ref{fig:canada_santi}, el RTT tiene un aumento vertiginoso entre el TLL 4 y el 5, que es cuando los paquetes llegan a Estados Unidos. Sucede algo similar en \ref{fig:canada_dani} sólo que se da entre el TLL 7 y el 8 en algunos casos y entre el 8 y el 9 en otros. También en ambos casos según cada ejecución del traceroute coincide con el momento en que se envían paquetes a Estados Unidos. En \ref{fig:canada_juan} se da una situación similar entre los TLL's 6 y 7 y 8 y 9 también coincidiendo con un salto de los paquetes entre Argentina y Estados Unidos
+
+Con respecto a las pruebas realizadas para China, en el gráfico \ref{fig:china_santi} se observan dos saltos claros entre los TLL's 4 y 5 y 6 y 7 que coinciden con dos saltos entre distintas regiones de Estados Unidos. Curiosamente, el salto entre Estados Unidos y Hong Kong no presenta un RTT mucho mayor que aquel que iba a dos regiones distintas de Estados Unidos. Se puede observar algo similar en el gráfico \ref{fig:china_dani }y \ref{fig:china_juan} en el mismo salto (que tiene como destino una IP perteneciente a la ciudad de Miami) sólo que en estos casos es entre las TLL's 9 y 10.
+
+La situación respecto a los gráficos de las pruebas realizadas para la universidad de Moscú presentan una anomalía similar a la de la universidad de Hong Kong. En todos se observa un salto más pronunciado que el resto (entre las TLL's 8 y 9 para \ref{fig:rusia_dani}, 9 y 10 para \ref{fig:rusia_juan}) y 4 y 5 para\ref{fig:rusia_santi}) que coincide con dos regiones de los Estados Unidos (las mismas para todas las API's). Interpretamos que esta situación puede ser causada porque si bien la IP pertenece a las direcciones IP's de los Estados Unidos el servidor puede encontrarse en verdad en una zona geográfica más lejana.
+
+Finalmente, en Samoa se da una situación particular: la dirección IP final del dominio de la Universidad pertenece a los Estados Unidos. Producto de una investigación y del análisis del mapa, pudimos establecer una teoría acerca de esta anomalía. A saber, que las islas pertenecientes al archipiélago en el cuál se encentra Samoa pertenecen a los Estados Unidos. Creemos que una posible explicación a este fenómeno es que Samoa no tiene ISP y utiliza los de las colonias vecinas.
+
+Además, varios gráficos presentan picos de RTT injustificados para una hora determinada. Este puede ser el caso de los gráficos \ref{fig:rusia_juan} y \ref{fig:canada_juan}, y consideramos estos picos como producto de alguna anomalía, dado que sólo ocurrieron una única vez en todas las pruebas. Por otro lado, los paquetes que no obtuvieron respuesta se pueden apreciar como un pico decreciente que llega hasta el valor 0 (que es como se representa a los paquetes que nunca retornaron). Es posible que estos paquetes no hayan tenido respuesta debido a que los routers no son compatibles con una respuesta de timeout cuando la tll llega a 0.
+
+
+\subsection{Segunda parte: búsqueda de enlaces transatlánticos}
+
+Los enlaces a traves de cableado submarino, también llamado enlaces transatlánticos representan un salto en cantidad respecto al \textbf{rtt}. Para lograr medir el salto en términos cualitativos calculamos el \textbf{z-score}, también denominado zrtt, con el objetivo de medir los saltos de los valores de los \textit{rtt's} y de esta manera poder aproximar en que salto el paquete enviado atravezó un enlace submarino.
+
+El $ZRTT$ se define de la siguiente manera:
+
+\begin{equation}
+ ZRTT_i = \frac{RTT_i - \overline{RTT}}{SRTT}
+\end{equation}
+
+siendo $\overline{RTT}$ y $SRTT$ el promedio y el desv\'io standard de los RTTs de la ruta, respectivamente, y $RTT_i$ al RTT medido para el salto $i$.
+
+Para identificar los enlaces transatlánticos es necesario encontrar un umbral que signifique un piso en cuanto al valor del $ZRTT$ que permita calificarlo como un valor distintivo. Este umbral será calculado experimentalmente sobre la base de los resultados de nuestro algoritmo de \textit{traceroute} y con la ayuda de las herramientas de geolocalización utilizadas.
+
+A continuaci\'on mostraremos los gr\'aficos obtenidos para las universidades, a partir de una experimentaci\'on en la que calculamos el rtt promedio y zrtt y los comparamos en un mismo gr\'afico:
+
+\ponerGrafico{./graficos_rtp2/dani_canada_zrtt.png}{Canada}{0.5}{canada_zrtt}
+\ponerGrafico{./graficos_rtp2/dani_china_zrtt.png}{China}{0.5}{china_zrtt}
+\ponerGrafico{./graficos_rtp2/dani_rusia_zrtt.png}{Rusia}{0.5}{rusia_zrtt}
+\ponerGrafico{./graficos_rtp2/santi_samoa_zrtt.png}{Samoa}{0.5}{samoa_zrtt}
+
+Podemos observar que los mayores valores de los \textit{zrtt's} coinciden con los saltos más grandes de los valores de los rtt's. En el caso de Canadá, el mayor valor entre los $ZRTT's$ coincide con el salto entre una dirección IP perteneciente a la Argentina y otra perteneciente a los Estados Unidos entre el \textit{hop} 9 y el 10.
+
+Para el caso de China, observamos que se destacan dos picos en los valores de los $ZRTT's$ para los paquetes enviados con tll's 10 y 12 los cuales coinciden perfectamente con los saltos que se producen entre una dirección IP localizada por nuestra API de geolocalización\footnote{Utilizamos tres API's distintas de geolocalización con el objetivo de complementar la información que otorga cada una y poder estimar con el mayor grado de precision las coordenadas de las direcciones IP buscadas. Las API's utilizadas son las siguientes: http://api.hostip.info; http://freegeoip.net/; y http://www.geoiptool.com/} en Argentina (hop 9) y otra de Estados Unidos (en el hop 10), por un lado, y entre una IP localizada en los Estados Unidos y Hong Kong por el otro entre el hop 11 y el 12. En este caso, además de identificar dos enlaces submarinos, el valor del $ZRTT$ permite comparar ambos enlaces entre sí aportando una impresión sobre la distancia y el tiempo que tarda un paquete en recorrer cada uno de estos.
+
+En el gráfico correspondiente a los paquetes enviados a la Universidad de Moscú se observa un pico claro del valor del $ZRTT$ ubicado entre el hop 8 y el 9 que se corresponde con el enlace transatlantico que comunica una dirección IP correspondiente a la Argentina con una correspondiente a los Estados Unidos. Sin embargo, este no es el único enlace transatlántico involucrado en el envío de nuestros paquetes. Las herramientas de geolocalización dan cuenta de un salto entre direcciones IP's correspondientes a los Estados Unidos y el este de Rusia entre los hops 10 y 11. Si observamos el gráfico podemos notar que existe un pequeño aumento respecto al valor del $ZRTT$ entre esos saltos pero que es un salto mínimo que apenas logra que el $ZRTT$ tome un valor positivo apenas superior al 0. Para entender qué sucede en este caso hay que considerar que el $ZRTT$ se calcula en función del tiempo que tarda un paquete en ir y volver. Nuestro análisis explota la relación existente entre distancia y tiempo en donde, \textit{a priori}, a mayor distancia es necesario mayor tiempo para recorrerla. Pero en la práctica es necesario considerar una multiplicidad de factores distintos que, más allá de la distancia recorrida, influyen también sobre la velocidad. A saber, esta diferencia en el tiempo que tarda un paquete en recorrer dos enlaces submarinos que conectan regiones separadas por una distancia similar puede explicarse por la calidad de la fibra del cable, por el ancho de banda de los enlaces y/o por el tráfico que hubiera en el momento de correr el algoritmo en uno y otro enlace. Recordemos simplemente que tan sólo por un tema de diferencia horaria es de esperar que los horarios de tráfico pico sean distintos. Sin embargo, a pesar de las posibles explicaciones de este fenómeno, no podemos asegurar con certeza la causa de por qué no se destaca el enlace submarino entre los Estados Unidos y la costa Este de la Federación Rusa.
+
+Finalmente, en el gráfico correspondiente a los paquetes enviados a Samoa se observa un valor alto del $ZRTT$ entre el hop 4 y el 5 que se corresponde con el salto entre una dirección IP correspondiente a la Argentina y otra a los Estados Unidos. Podemos observar además dos saltos más de menor jerarquía en los valores de los $ZRTT's$, uno entre el hop 6 y el 7 que se corresponde con un salto entre una IP correspondiente al estado de Nueva York y otra de Washington y otro entre los hops 11 y 12 que se corresponde con un salto entre una IP correspondiente a un lugar de los Estados Unidos que no logramos identificar y otra correspondiente a Scotsdale también situado en los Estados Unidos, lugar al que también pertenece la IP de la Universidad de Samoa. Si la teoría esbozada en el apartado anterior de que la Universidad utiliza un ISP de una colonia vecina a Samoa es posible que este último salto pueda representar un nuevo enlace transatlántico. Sin embargo, debido a la diferencia de valor que tiene con respecto al primer salto transatlántico identificado no parece ser probable que se trate de un cable submarino y estos datos, en cambio, podrían aportar a la teoría de que sensillamente la página de la Universidad de Samoa está hosteada en una compañía de hosting en los Estados Unidos.
+
+Una observación pertinence a la hora de analizar los gráficos es que el valor del $RTT$ del primer paquete enviado con TLL=1 suele ser considerablemente mayor que el del segundo y hasta el tercero enviados con TLL=2 y TLL=3 respectivamente. Esto genera valores muy altos del $ZRTT$ para el primer Hop. Consideramos que este fenómeno puede tener explicación en el hecho de que para todas las pruebas realizadas, el primer salto siempre se corresponde con una IP privada perteneciente, probablemente, al router de una red interna. Entendemos que este valor alto del $ZRTT$ puede tener que ver con la forma de resolver un \textit{response} de \textit{timeout} para un paquete que no logra salir de la propia red LAN local.
+
+Más allá de que en todos los gráficos se observan picos en los valores de los $ZRTT's$ que permiten identificar enlaces de longitud superior (que pueden presuponerse como transatlánticos) el rango de posibles valores que puede adoptar un $ZRTT$ puede variar ostensiblemente entre el conjunto de $RTT's$ de una prueba y los de otra debido a que este rango de valores depende de propiedades que varían tal como la desviación estándar o el promedio (que pueden ser y son bastante distintos entre los resultados de una ejecución del \textit{traceroute} y otra). Sin embargo, observando los gráficos se puede observar empíricamente que todos los hops donde se presupone un enlace transatlántico tienen un valor de $
+
+Conclusión sobre el umbral a adoptar
+
+\subsection{Mapas}
+\ponerGrafico{./mapas/Canada-Dani.png}{Canada}{0.5}{CanadaIp}
+\ponerGrafico{./mapas/Hong-Kong.png}{China}{0.4}{}
+\ponerGrafico{./mapas/Rusia.png}{Rusia}{0.5}{}
+\ponerGrafico{./mapas/Samoa.png}{Samoa}{0.6}{}
+

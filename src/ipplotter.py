@@ -94,11 +94,11 @@ def rtt_promedio_dia(archivos):
 	plt.show()
 
 def main():
-	resultados_de = "juan"
+	resultados_de = "santi"
 	resultados_unv = "samoa"
 	archivos = glob.glob('./resultados_%s/%s_*.csv' % (resultados_de, resultados_unv) )
 
-	# zrtt(archivos[0])
+	zrtt(archivos[0])
 	rtt_promedio_dia( sorted(archivos) )
 	return
 

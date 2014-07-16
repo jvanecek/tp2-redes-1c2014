@@ -1,0 +1,76 @@
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 11 no responde
+ttl = 15 no responde
+ttl = 20 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+ttl = 3 no responde
+ttl = 4 no responde
+ttl = 5 no responde
+ttl = 15 no responde
+
+mejor ruta = ['192.168.0.1', '181.28.55.1', '200.89.166.113', '200.89.165.1', '200.89.165.250', '159.63.53.213', '67.16.148.102', '4.68.111.121', '4.69.138.91', '4.69.140.133', '4.69.151.149', '4.34.191.254', '184.168.0.73', '184.168.0.73', '97.74.255.129', '23.229.137.67']
+
+rtt promedio = 161.959225312
+
+enlaces submarinos = ['4.34.191.254 a 184.168.0.73', '184.168.0.73 a 184.168.0.73', '184.168.0.73 a 97.74.255.129']
+
+hop		rtt
+192.168.0.1    24.34
+181.28.55.1    37.54
+200.89.166.113    143.18
+200.89.165.1    95.82
+200.89.165.250    34.03
+159.63.53.213    38.16
+67.16.148.102    160.15
+4.68.111.121    164.69
+4.69.138.91    187.22
+4.69.140.133    188.95
+4.69.151.149    197.47
+4.34.191.254    227.48
+184.168.0.73    295.57
+184.168.0.73    285.51
+97.74.255.129    293.24
+23.229.137.67    218.00
+
+hop		zrtt
+192.168.0.1    -1.52
+181.28.55.1    -1.37
+200.89.166.113    -0.21
+200.89.165.1    -0.73
+200.89.165.250    -1.41
+159.63.53.213    -1.37
+67.16.148.102    -0.02
+4.68.111.121    0.03
+4.69.138.91    0.28
+4.69.140.133    0.30
+4.69.151.149    0.39
+4.34.191.254    0.72
+184.168.0.73    1.48
+184.168.0.73    1.36
+97.74.255.129    1.45
+23.229.137.67    0.62

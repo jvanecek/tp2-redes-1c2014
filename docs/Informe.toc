@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}Introducci\'on}{3}{section.1}
+\contentsline {section}{\numberline {2}Desarrollo}{4}{section.2}
+\contentsline {section}{\numberline {3}Resultados}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}Selecci\IeC {\'o}n de las universidades}{5}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Primera Parte: Correr nuestro Traceroute}{5}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Segunda parte: b\IeC {\'u}squeda de enlaces transatl\IeC {\'a}nticos}{12}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Mapas}{16}{subsection.3.4}
+\contentsline {section}{\numberline {4}Conclusiones}{18}{section.4}

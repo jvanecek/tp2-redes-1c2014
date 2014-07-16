@@ -1,0 +1,7 @@
+\section{Conclusiones}
+
+Luego de realizadas las observaciones sobre una gran cantidad de resultados, podemos corroborar, como es de esperarse, que en general los mayores tiempos se producen en los enlaces submarinos.
+
+Pero decir esto, no es realmente pensar en lo que pudimos observar. Si bien nos aseguramos en lineas generales que eso ocurre, nos encontramos con algunos resultados que no estaban dentro de lo esperado. Sin dudas, esto se debe a la naturaleza de Internet, por ser una red tan grande y diversa, podemos encontrar grandes delays provocados por congesti\'on, podemos encontrarnos tambi\'en con nodos que no van a darnos respuestas, ya sea por ser obsoletos o por su configuraci\'on. Tambien, vimos como las rutas de los paquetes cambian, no son algo est\'atico. 
+
+Sin embargo, pudimos notar, que a\'un realizando los experimentos desde dinstintos lugares, con distintos proveedores de Internet, y en distintos horarios, las rutas seguidas por los paquetes, son geogr\'aficamente similares. Esto se debe, en caso de estar enviando paquetes hacia otro continente, a que no existen muchos enlaces submarinos, sino que para poder llegar al otro lado del oc\'eano, nuestros paquetes atravesaron seguramente un mismo enlace, o conjunto de enlaces.

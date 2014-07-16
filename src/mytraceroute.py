@@ -47,7 +47,7 @@ class TR:
         return resp
 
     # manda packages paquetes por ttl a host, y devuelve una lista de Hop
-    def send(self, host, timeout=1, packages=4, umbral=0.5, localizacion=False, api=2):
+    def send(self, host, timeout=4, packages=25, umbral=0.9, localizacion=True, api=2):
         self.hops = []
         ttl = 1
 
@@ -75,7 +75,10 @@ class TR:
             self.hops.append( hop )
             ttl += 1
 
-        rtts = [ hop.rtt_medio for hop in self.hops ]
+	rtts = []
+        rtts_aux = [ hop.rtt_medio for hop in self.hops ]
+	for i in range(1,len(rtts_aux)):
+	    rtts[i] = rtts_aux[i] - rtts_aux[i - 1]
         rtt_promedio = numpy.mean( rtts )
         rtt_desvio = numpy.std( rtts )
 
